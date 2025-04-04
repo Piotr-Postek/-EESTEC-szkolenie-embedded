@@ -1,48 +1,68 @@
-#define DIRECTION_PIN       8
-#define STEP_PIN            9
-#define NUMBER_OF_STEPS     200
-#define PULSE_WIDTH_MICROS  20
-#define MILLIS_BETW_STEPS   10
-#define BUTTON_1            2
-#define BUTTON_2            3
-
-int statostart;
-void setup() { 
-  digitalWrite(LED_BUILTIN, LOW);
-  pinMode(DIRECTION_PIN, OUTPUT);
-  pinMode(STEP_PIN, OUTPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(BUTTON_1, INPUT);
-  pinMode(BUTTON_2, INPUT);
-}
-
-void loop() { 
-
-  if(digitalRead(BUTTON_1) == HIGH){
-    delay(50);
-    if(digitalRead(BUTTON_1) == HIGH){
-    digitalWrite(DIRECTION_PIN, HIGH);
-    for(int n = 0; n < NUMBER_OF_STEPS; n++) {
-     digitalWrite(STEP_PIN, HIGH);
-     delayMicroseconds(PULSE_WIDTH_MICROS); 
-     digitalWrite(STEP_PIN, LOW);
-     delay(MILLIS_BETW_STEPS);
-     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+{
+  "version": 1,
+  "author": "Piotr-Postek",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-breadboard-mini", "id": "bb1", "top": 267.4, "left": 16.8, "attrs": {} },
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 11.61, "left": 99.91, "attrs": {} },
+    { "type": "wokwi-a4988", "id": "drv1", "top": 110.4, "left": 1.2, "rotate": 270, "attrs": {} },
+    {
+      "type": "wokwi-stepper-motor",
+      "id": "stepper1",
+      "top": -122.43,
+      "left": -105.36,
+      "attrs": { "size": "17", "arrow": "red", "display": "angle" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 246.2,
+      "left": 297.6,
+      "attrs": { "color": "green" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn2",
+      "top": 303.8,
+      "left": 307.2,
+      "attrs": { "color": "green" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text1",
+      "top": 220.8,
+      "left": 307.2,
+      "attrs": { "text": "LEWO" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text2",
+      "top": 345.6,
+      "left": 316.8,
+      "attrs": { "text": "PRAWO" }
     }
-  }
-  }
-
-  if(digitalRead(BUTTON_2) == HIGH){
-    delay(50);
-    if(digitalRead(BUTTON_2) == HIGH){
-    digitalWrite(DIRECTION_PIN, LOW);
-    for(int n = 0; n < NUMBER_OF_STEPS; n++) {
-     digitalWrite(STEP_PIN, HIGH);
-     delayMicroseconds(PULSE_WIDTH_MICROS); 
-     digitalWrite(STEP_PIN, LOW);
-     delay(MILLIS_BETW_STEPS);
-     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    }
-  }
-  }
+  ],
+  "connections": [
+    [ "stepper1:B-", "drv1:1B", "green", [ "v26.22", "h21.66" ] ],
+    [ "stepper1:B+", "drv1:1A", "gold", [ "v32.89", "h54.46", "v35.5" ] ],
+    [ "stepper1:A+", "drv1:2A", "blue", [ "v38.89", "h54.19", "v29.5" ] ],
+    [ "stepper1:A-", "drv1:2B", "red", [ "v45.56", "h20.46" ] ],
+    [ "drv1:SLEEP", "drv1:RESET", "green", [ "v14.3", "h-10.33" ] ],
+    [ "drv1:DIR", "uno:8", "orange", [ "v17.63", "h17.13", "v-206.67", "h191.55", "v34.11" ] ],
+    [
+      "drv1:STEP",
+      "uno:9",
+      "red",
+      [ "v25.63", "h40.07", "v-200.66", "h168.76", "v8.38", "h-0.1" ]
+    ],
+    [ "btn1:1.r", "uno:2", "cyan", [ "v0.65", "h59.52", "v-260.67", "h-54.14" ] ],
+    [ "btn2:1.r", "uno:3", "green", [ "h9.8", "v48", "h201.2", "v-316.8", "h-104.69" ] ],
+    [ "uno:5V", "bb1:17t.a", "red", [ "v17.69", "h-67.91" ] ],
+    [ "uno:GND.2", "bb1:16t.a", "black", [ "v27.29", "h-0.61" ] ],
+    [ "btn1:2.l", "bb1:17t.b", "red", [ "h-19.2", "v9.8" ] ],
+    [ "btn2:2.l", "bb1:17t.c", "red", [ "h-19.2", "v-38.2" ] ],
+    [ "btn1:1.l", "bb1:16t.b", "black", [ "h-76.8", "v0", "h-67.2", "v9.6" ] ],
+    [ "btn2:1.l", "bb1:16t.c", "black", [ "h0" ] ]
+  ],
+  "dependencies": {}
 }

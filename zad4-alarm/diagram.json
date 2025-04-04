@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "author": "Uri Shaked",
+    "author": "Piotr-Postek",
     "editor": "wokwi",
     "parts": [
       { "type": "wokwi-arduino-uno", "id": "uno", "top": 202.2, "left": 37.8, "attrs": {} },

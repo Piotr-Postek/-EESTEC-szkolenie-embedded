@@ -4,7 +4,7 @@
 #include "SafeState.h"
 #include "icons.h"
 
-/* Display */
+/* Wyswietlacz */
 LiquidCrystal lcd(12, 11, 10, 9, 8, 7);
 
 /* LED */
@@ -13,12 +13,12 @@ LiquidCrystal lcd(12, 11, 10, 9, 8, 7);
 /* Buzzer */
 #define SPEAKER_PIN 13
 
-// Notes
+// Nuty
 #define NOTE_C4  262
 #define NOTE_CS4 277
 #define NOTE_D4  294
 
-/* Keypad setup */
+/* Ustawienie keepada */
 const byte KEYPAD_ROWS = 4;
 const byte KEYPAD_COLS = 4;
 byte rowPins[KEYPAD_ROWS] = {5, 4, 3, 2};
@@ -32,26 +32,27 @@ char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, KEYPAD_ROWS, KEYPAD_COLS);
 
-/* SafeState stores the secret code in EEPROM */
+/* Ustawienie zmiennej safestate do pamieci EEPROM */
 SafeState safeState;
 
+
 void lock() {
-  // dioda swieci na czerwono
   safeState.lock();
 }
 
 void unlock() {
-  // dioda swieci na zielono
+    digitalWrite(PIN_R, LOW);
+    noTone(SPEAKER_PIN);
 }
 
 
 void showStartupMessage() {
   lcd.setCursor(4, 0);
-  lcd.print("Welcome!");
+  lcd.print("Witaj!");
   delay(1000);
 
   lcd.setCursor(0, 2);
-  String message = "ArduinoSafe v1.0";
+  String message = "UNO Alarm v1.0";
   for (byte i = 0; i < message.length(); i++) {
     lcd.print(message[i]);
     delay(100);
@@ -87,12 +88,12 @@ void showWaitScreen(int delayMillis) {
 bool setNewCode() {
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Enter new code:");
+  lcd.print("Podaj kod:");
   String newCode = inputSecretCode();
 
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Confirm new code");
+  lcd.print("Zatwierdz kod");
   String confirmCode = inputSecretCode();
 
   if (newCode.equals(confirmCode)) {
@@ -101,9 +102,9 @@ bool setNewCode() {
   } else {
     lcd.clear();
     lcd.setCursor(1, 0);
-    lcd.print("Code mismatch");
+    lcd.print("Odmowa!");
     lcd.setCursor(0, 1);
-    lcd.print("Safe not locked!");
+    lcd.print("Kod niezgodny!");
     delay(2000);
     return false;
   }
@@ -114,7 +115,7 @@ void showUnlockMessage() {
   lcd.setCursor(0, 0);
   lcd.write(ICON_UNLOCKED_CHAR);
   lcd.setCursor(4, 0);
-  lcd.print("Unlocked!");
+  lcd.print("Otwarte");
   lcd.setCursor(15, 0);
   lcd.write(ICON_UNLOCKED_CHAR);
   delay(1000);
@@ -126,7 +127,7 @@ void safeUnlockedLogic() {
   lcd.setCursor(0, 0);
   lcd.write(ICON_UNLOCKED_CHAR);
   lcd.setCursor(2, 0);
-  lcd.print(" # to lock");
+  lcd.print(" # zablokuj");
   lcd.setCursor(15, 0);
   lcd.write(ICON_UNLOCKED_CHAR);
 
@@ -134,7 +135,7 @@ void safeUnlockedLogic() {
 
   if (safeState.hasCode()) {
     lcd.setCursor(0, 1);
-    lcd.print("  A = new code");
+    lcd.print("  A = nowy kod");
     newCodeNeeded = false;
   }
 
@@ -167,7 +168,7 @@ void safeLockedLogic() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.write(ICON_LOCKED_CHAR);
-  lcd.print(" Safe Locked! ");
+  lcd.print(" Uzbrojono! ");
   lcd.write(ICON_LOCKED_CHAR);
 
   String userCode = inputSecretCode();
@@ -176,13 +177,11 @@ void safeLockedLogic() {
 
   if (unlockedSuccessfully) {
     showUnlockMessage();
-    digitalWrite(PIN_R, LOW);
-    noTone(SPEAKER_PIN);
     unlock();
   } else {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Access Denied!");
+    lcd.print("Odmowa!");
     digitalWrite(PIN_R, HIGH);
 
     tone(SPEAKER_PIN, NOTE_C4);
@@ -199,12 +198,12 @@ void setup() {
   lcd.begin(16, 2);
   init_icons(lcd);
 
-  /* Make sure the physical lock is sync with the EEPROM state */
+  /* Sprawdzenie czy zmienna jest w pamieci EEPROM i ustawienie odpowiedniego stanu */
   Serial.begin(115200);
   if (safeState.locked()) {
-    //lock();
+    lock();
   } else {
-    //unlock();
+    unlock();
   }
 
   showStartupMessage();
